@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumBoost ML - Upload Data{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Time Series Forecasting with Quantum-Inspired Optimization</h2>
+    <p class="subtitle">Upload your data or use a sample dataset to get started</p>
+</div>
+
+<div class="upload-section">
+    <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+        <div class="card upload-card">
+            <h3 class="card-title">Upload Dataset</h3>
+            
+            <div class="file-upload-zone" id="dropZone">
+                <div class="upload-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <p class="upload-text">Drag and drop your file here, or click to browse</p>
+                <p class="upload-formats">Supported formats: <span class="format-badge">.csv</span> <span class="format-badge">.xlsx</span> <span class="format-badge">.xls</span></p>
+                <input type="file" name="file" id="fileInput" accept=".csv,.xls,.xlsx" class="file-input">
+            </div>
+            
+            <div class="sample-section">
+                <p class="or-divider"><span>or</span></p>
+                <button type="submit" name="use_sample" value="true" class="btn btn-secondary">
+                    Use Sample Dataset
+                </button>
+                <p class="help-text">3 years of daily data with trend, seasonality, and noise</p>
+            </div>
+        </div>
+        
+        <div class="card options-card">
+            <h3 class="card-title">Model Configuration</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Select Model</label>
+                <div class="radio-group">
+                    {% if tensorflow_available %}
+                    <label class="radio-option">
+                        <input type="radio" name="model_type" value="lstm">
+                        <span class="radio-label">
+                            <strong>LSTM</strong>
+                            <small>Deep learning for complex patterns</small>
+                        </span>
+                    </label>
+                    {% endif %}
+                    <label class="radio-option">
+                        <input type="radio" name="model_type" value="xgboost" checked>
+                        <span class="radio-label">
+                            <strong>XGBoost</strong>
+                            <small>Gradient boosting with high accuracy</small>
+                        </span>
+                    </label>
+                    <div class="model-group">
+                        <div class="model-group-header" onclick="toggleModelGroup(this)">
+                            <strong>Random Forest</strong>
+                            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="model-group-options">
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="random_forest_regressor">
+                                <span class="radio-label">
+                                    <strong>Random Forest Regressor</strong>
+                                    <small>Ensemble method for regression (MAE, RMSE, MAPE)</small>
+                                </span>
+                            </label>
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="random_forest_classifier">
+                                <span class="radio-label">
+                                    <strong>Random Forest Classifier</strong>
+                                    <small>Ensemble method for classification (Accuracy, Confusion Matrix)</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="model-group">
+                        <div class="model-group-header" onclick="toggleModelGroup(this)">
+                            <strong>Decision Tree</strong>
+                            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="model-group-options">
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="decision_tree_regressor">
+                                <span class="radio-label">
+                                    <strong>Decision Tree Regressor</strong>
+                                    <small>Interpretable tree model for regression (MAE, RMSE, MAPE)</small>
+                                </span>
+                            </label>
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="decision_tree_classifier">
+                                <span class="radio-label">
+                                    <strong>Decision Tree Classifier</strong>
+                                    <small>Interpretable tree model for classification (Accuracy, Confusion Matrix)</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="model-group">
+                        <div class="model-group-header" onclick="toggleModelGroup(this)">
+                            <strong>SVM</strong>
+                            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="model-group-options">
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="svm_regressor">
+                                <span class="radio-label">
+                                    <strong>SVM Regressor</strong>
+                                    <small>Support Vector Machine for regression (MAE, RMSE, MAPE)</small>
+                                </span>
+                            </label>
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="svm_classifier">
+                                <span class="radio-label">
+                                    <strong>SVM Classifier</strong>
+                                    <small>Support Vector Machine for classification (Accuracy, Confusion Matrix)</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="model-group">
+                        <div class="model-group-header" onclick="toggleModelGroup(this)">
+                            <strong>KNN</strong>
+                            <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                        <div class="model-group-options">
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="knn_regressor">
+                                <span class="radio-label">
+                                    <strong>KNN Regressor</strong>
+                                    <small>K-Nearest Neighbors for regression (MAE, RMSE, MAPE)</small>
+                                </span>
+                            </label>
+                            <label class="radio-option sub-option">
+                                <input type="radio" name="model_type" value="knn_classifier">
+                                <span class="radio-label">
+                                    <strong>KNN Classifier</strong>
+                                    <small>K-Nearest Neighbors for classification (Accuracy, Confusion Matrix)</small>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <label class="radio-option">
+                        <input type="radio" name="model_type" value="linear_regression">
+                        <span class="radio-label">
+                            <strong>Linear Regression</strong>
+                            <small>Ridge regression for linear patterns</small>
+                        </span>
+                    </label>
+                    <label class="radio-option">
+                        <input type="radio" name="model_type" value="bayesian_ridge">
+                        <span class="radio-label">
+                            <strong>Bayesian Ridge</strong>
+                            <small>Probabilistic linear regression</small>
+                        </span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="params-section">
+                <details class="params-details">
+                    <summary class="params-summary">Advanced Parameters</summary>
+                    <div class="params-content">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="epochs">Epochs (LSTM)</label>
+                                <input type="number" id="epochs" name="epochs" value="30" min="5" max="200" class="form-input">
+                                <span class="help-text">Training iterations</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="batch_size">Batch Size</label>
+                                <input type="number" id="batch_size" name="batch_size" value="32" min="8" max="128" class="form-input">
+                                <span class="help-text">Samples per batch</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="n_estimators">N Estimators</label>
+                                <input type="number" id="n_estimators" name="n_estimators" value="100" min="10" max="500" class="form-input">
+                                <span class="help-text">Trees (XGB/RF)</span>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="max_depth">Max Depth</label>
+                                <input type="number" id="max_depth" name="max_depth" value="6" min="2" max="20" class="form-input">
+                                <span class="help-text">Tree depth limit</span>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-large" id="uploadBtn">
+                Upload & Inspect Dataset
+            </button>
+        </div>
+    </form>
+</div>
+
+{% if dataset_history %}
+<div class="card history-card" style="margin-top: 2rem;">
+    <h3 class="card-title">Recent Datasets</h3>
+    <div class="history-list">
+        {% for entry in dataset_history %}
+        <div class="history-item-wrapper" style="display: flex; align-items: center; gap: 0.5rem;">
+            <a href="{{ url_for('load_history', history_session_id=entry.session_id) }}" class="history-item" style="flex: 1;">
+                <div class="history-info">
+                    <span class="history-name">{{ entry.data_source }}</span>
+                    <span class="history-meta">{{ entry.rows }} rows, {{ entry.columns }} columns</span>
+                </div>
+                <span class="history-date">{{ entry.timestamp }}</span>
+            </a>
+            <form action="{{ url_for('delete_history', history_session_id=entry.session_id) }}" method="POST" style="margin: 0;" onsubmit="return confirm('Remove this dataset from history?');">
+                <button type="submit" class="btn btn-danger btn-small" title="Remove from history" style="padding: 0.4rem 0.6rem; background: #ef4444; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="m19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadBtn = document.getElementById('uploadBtn');
+    
+    dropZone.addEventListener('click', () => fileInput.click());
+    
+    dropZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropZone.classList.add('dragover');
+    });
+    
+    dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('dragover');
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropZone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) {
+            fileInput.files = e.dataTransfer.files;
+            updateFileName();
+        }
+    });
+    
+    fileInput.addEventListener('change', updateFileName);
+    
+    function updateFileName() {
+        if (fileInput.files.length) {
+            const fileName = fileInput.files[0].name;
+            dropZone.querySelector('.upload-text').textContent = `Selected: ${fileName}`;
+            dropZone.classList.add('has-file');
+        }
+    }
+    
+    function toggleModelGroup(header) {
+        const group = header.parentElement;
+        group.classList.toggle('expanded');
+    }
+</script>
+{% endblock %}

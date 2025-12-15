@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuantumBoost ML - Quantum-Inspired Time Series Forecasting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="landing-page">
+    <section class="landing-hero">
+        <div class="landing-hero-content">
+            <h1 class="landing-logo">QuantumBoost ML</h1>
+            <p class="landing-tagline">Quantum-Inspired Time Series Forecasting</p>
+            <p class="landing-description">
+                Harness the power of quantum-inspired optimization algorithms combined with 
+                state-of-the-art machine learning models for accurate time series predictions.
+            </p>
+            <a href="{{ url_for('index') }}" class="landing-cta">
+                Get Started
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <section class="landing-features">
+        <h2 class="landing-section-title">Powerful Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Easy Data Upload</h3>
+                <p class="feature-description">Upload CSV, Excel files or use sample datasets. Automatic data inspection and validation.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M3 9h18M9 21V9"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Data Cleaning</h3>
+                <p class="feature-description">Handle missing values, normalize data, and generate lag features with a single click.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Visualization</h3>
+                <p class="feature-description">Interactive charts and graphs to explore trends, patterns, and correlations in your data.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"/>
+                        <path d="M12 1v6m0 6v10"/>
+                        <path d="m4.22 4.22 4.24 4.24m7.08 7.08 4.24 4.24"/>
+                        <path d="M1 12h6m6 0h10"/>
+                        <path d="m4.22 19.78 4.24-4.24m7.08-7.08 4.24-4.24"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Quantum Optimization</h3>
+                <p class="feature-description">Unique quantum-inspired gradient optimization for escaping local minima and better convergence.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                        <path d="M2 17l10 5 10-5"/>
+                        <path d="M2 12l10 5 10-5"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">Multiple Models</h3>
+                <p class="feature-description">Choose from XGBoost, Random Forest, SVM, KNN, Decision Trees, and more algorithms.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <h3 class="feature-title">PDF Reports</h3>
+                <p class="feature-description">Generate comprehensive PDF reports with metrics, charts, and model comparisons.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="landing-models">
+        <h2 class="landing-section-title">Supported Models</h2>
+        <div class="models-grid">
+            <div class="model-badge">XGBoost</div>
+            <div class="model-badge">Random Forest</div>
+            <div class="model-badge">Decision Tree</div>
+            <div class="model-badge">SVM</div>
+            <div class="model-badge">KNN</div>
+            <div class="model-badge">Linear Regression</div>
+            <div class="model-badge">Bayesian Ridge</div>
+            <div class="model-badge">LSTM (Optional)</div>
+        </div>
+    </section>
+
+    <footer class="landing-footer">
+        <p>QuantumBoost ML - Quantum-Inspired Time Series Forecasting</p>
+    </footer>
+</body>
+</html>

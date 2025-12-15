@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumBoost ML - Data Inspection{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Data Inspection</h2>
+    <p class="subtitle">{{ data_source }}</p>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <span class="metric-value">{{ inspection.shape.rows }}</span>
+        <span class="metric-label">Rows</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value">{{ inspection.shape.columns }}</span>
+        <span class="metric-label">Columns</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value">{{ inspection.total_missing }}</span>
+        <span class="metric-label">Missing Values</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value">{{ inspection.duplicate_rows_count }}</span>
+        <span class="metric-label">Duplicate Rows</span>
+    </div>
+</div>
+
+<div class="inspection-grid">
+    <div class="card">
+        <h3 class="card-title">First 10 Rows</h3>
+        <div class="table-wrapper">
+            {{ inspection.head | safe }}
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">Last 10 Rows</h3>
+        <div class="table-wrapper">
+            {{ inspection.tail | safe }}
+        </div>
+    </div>
+</div>
+
+<div class="inspection-grid">
+    <div class="card">
+        <h3 class="card-title">Descriptive Statistics</h3>
+        <div class="table-wrapper">
+            {{ inspection.descriptive_stats | safe }}
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">Column Data Types</h3>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Column</th><th>Type</th></tr>
+                </thead>
+                <tbody>
+                    {% for col, dtype in inspection.dtypes.items() %}
+                    <tr><td>{{ col }}</td><td class="mono">{{ dtype }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="inspection-grid">
+    <div class="card">
+        <h3 class="card-title">Missing Values Summary</h3>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Column</th><th>Missing Count</th></tr>
+                </thead>
+                <tbody>
+                    {% for col, count in inspection.missing_values.items() %}
+                    <tr>
+                        <td>{{ col }}</td>
+                        <td class="mono {% if count > 0 %}text-warning{% endif %}">{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">Outliers by IQR</h3>
+        <div class="table-wrapper">
+            <table class="data-table">
+                <thead>
+                    <tr><th>Column</th><th>Outliers</th><th>Lower</th><th>Upper</th></tr>
+                </thead>
+                <tbody>
+                    {% for col, info in inspection.outliers_by_iqr.items() %}
+                    <tr>
+                        <td>{{ col }}</td>
+                        <td class="mono {% if info.count > 0 %}text-warning{% endif %}">{{ info.count }}</td>
+                        <td class="mono">{{ info.lower_bound }}</td>
+                        <td class="mono">{{ info.upper_bound }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="visualization-grid">
+    {% if inspection.correlation_plot %}
+    <div class="card">
+        <h3 class="card-title">Correlation Heatmap</h3>
+        <div class="plot-container">
+            <img src="data:image/png;base64,{{ inspection.correlation_plot }}" alt="Correlation Heatmap" class="plot-image">
+        </div>
+    </div>
+    {% endif %}
+    
+    {% if inspection.outlier_boxplot %}
+    <div class="card">
+        <h3 class="card-title">Outlier Detection (Boxplots)</h3>
+        <div class="plot-container">
+            <img src="data:image/png;base64,{{ inspection.outlier_boxplot }}" alt="Outlier Boxplots" class="plot-image">
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% if inspection.line_chart_preview %}
+<div class="card full-width">
+    <h3 class="card-title">Time Series Preview</h3>
+    <div class="plot-container wide">
+        <img src="data:image/png;base64,{{ inspection.line_chart_preview }}" alt="Time Series Preview" class="plot-image">
+    </div>
+</div>
+{% endif %}
+
+<div class="card preprocessing-card">
+    <h3 class="card-title">Preprocessing Options</h3>
+    
+    <form action="{{ url_for('train') }}" method="POST" class="preprocessing-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label" for="time_column">Time Column</label>
+                <select name="time_column" id="time_column" class="form-select">
+                    {% for col in columns %}
+                    <option value="{{ col }}" {% if col == inspection.detected_time_column %}selected{% endif %}>{{ col }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="value_column">Value Column</label>
+                <select name="value_column" id="value_column" class="form-select">
+                    {% for col in columns %}
+                    <option value="{{ col }}" {% if col == inspection.detected_value_column %}selected{% endif %}>{{ col }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="missing_strategy">Missing Value Strategy</label>
+                <select name="missing_strategy" id="missing_strategy" class="form-select">
+                    <option value="interpolate">Interpolate (Linear)</option>
+                    <option value="mean">Fill with Mean</option>
+                    <option value="ffill">Forward Fill</option>
+                    <option value="drop">Drop Rows</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="normalization">Normalization Method</label>
+                <select name="normalization" id="normalization" class="form-select">
+                    <option value="minmax">Min-Max Scaling</option>
+                    <option value="standard">Standard Scaling (Z-score)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="lag_features">Lag Features</label>
+                <input type="text" name="lag_features" id="lag_features" value="1,2,3,7,14" class="form-input">
+                <span class="help-text">Comma-separated lag periods</span>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-option">
+                    <input type="checkbox" name="remove_duplicates" checked>
+                    <span>Remove Duplicate Rows</span>
+                </label>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back to Upload</a>
+            <a href="{{ url_for('clean') }}" class="btn btn-secondary">Clean Data</a>
+            <a href="{{ url_for('visualize') }}" class="btn btn-secondary">Visualize</a>
+            <button type="submit" class="btn btn-primary btn-large">
+                Proceed to Training
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}

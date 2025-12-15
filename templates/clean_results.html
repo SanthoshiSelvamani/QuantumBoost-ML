@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumBoost ML - Cleaning Results{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Data Cleaning Complete</h2>
+    <p class="subtitle">{{ data_source }}</p>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <span class="metric-value">{{ report.original_rows }}</span>
+        <span class="metric-label">Original Rows</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value">{{ report.final_rows }}</span>
+        <span class="metric-label">Final Rows</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value text-warning">{{ report.rows_removed }}</span>
+        <span class="metric-label">Rows Removed</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value">{{ report.original_columns }}</span>
+        <span class="metric-label">Original Columns</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value">{{ report.final_columns }}</span>
+        <span class="metric-label">Final Columns</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value text-success">{{ report.values_modified }}</span>
+        <span class="metric-label">Values Modified</span>
+    </div>
+</div>
+
+<div class="card">
+    <h3 class="card-title">Cleaning Steps Applied</h3>
+    <div class="steps-list">
+        {% if report.steps %}
+        <ul class="cleaning-steps">
+            {% for step in report.steps %}
+            <li class="step-item">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 6L9 17l-5-5"/>
+                </svg>
+                <span>{{ step }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>No cleaning steps were applied.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="inspection-grid">
+    <div class="card">
+        <h3 class="card-title">First 10 Rows (Cleaned)</h3>
+        <div class="table-wrapper">
+            {{ head | safe }}
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">Last 10 Rows (Cleaned)</h3>
+        <div class="table-wrapper">
+            {{ tail | safe }}
+        </div>
+    </div>
+</div>
+
+<div class="card export-card">
+    <h3 class="card-title">Export Cleaned Data</h3>
+    <p class="export-description">Download your cleaned dataset in your preferred format:</p>
+    
+    <div class="export-buttons">
+        <a href="{{ url_for('export_cleaned', format='csv') }}" class="btn btn-primary">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Download CSV
+        </a>
+        <a href="{{ url_for('export_cleaned', format='excel') }}" class="btn btn-success">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            Download Excel
+        </a>
+    </div>
+</div>
+
+<div class="form-actions" style="margin-top: 30px;">
+    <a href="{{ url_for('clean') }}" class="btn btn-secondary">Clean Again</a>
+    <a href="{{ url_for('visualize') }}" class="btn btn-primary">Create Visualizations</a>
+    <a href="{{ url_for('inspect') }}" class="btn btn-secondary">Back to Inspect</a>
+</div>
+
+<style>
+.cleaning-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.step-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.step-item:last-child {
+    border-bottom: none;
+}
+.step-item svg {
+    color: var(--success-color);
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+.export-card {
+    text-align: center;
+}
+.export-description {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+.export-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.export-buttons .btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+.btn-success:hover {
+    background: #218838;
+}
+.text-success {
+    color: var(--success-color);
+}
+</style>
+{% endblock %}

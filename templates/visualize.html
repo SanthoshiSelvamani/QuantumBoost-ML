@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumBoost ML - Visualizations{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Data Visualizations</h2>
+    <p class="subtitle">{{ data_source }}</p>
+</div>
+
+<div class="viz-container">
+    <div class="card viz-options-card">
+        <h3 class="card-title">Chart Options</h3>
+        
+        <div class="chart-type-selector">
+            <label class="form-label">Select Chart Type</label>
+            <div class="chart-types">
+                <button type="button" class="chart-type-btn" data-type="pie" {% if not viz_options.available_charts.pie_chart %}disabled{% endif %}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.21 15.89A10 10 0 1 1 8 2.83"/>
+                        <path d="M22 12A10 10 0 0 0 12 2v10z"/>
+                    </svg>
+                    <span>Pie Chart</span>
+                </button>
+                <button type="button" class="chart-type-btn" data-type="bar">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M7 16V8M12 16v-5M17 16v-8"/>
+                    </svg>
+                    <span>Bar Chart</span>
+                </button>
+                <button type="button" class="chart-type-btn" data-type="scatter" {% if not viz_options.available_charts.scatter_plot %}disabled{% endif %}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="7" cy="7" r="2"/>
+                        <circle cx="17" cy="7" r="2"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <circle cx="7" cy="17" r="2"/>
+                        <circle cx="17" cy="17" r="2"/>
+                    </svg>
+                    <span>Scatter Plot</span>
+                </button>
+                <button type="button" class="chart-type-btn" data-type="area" {% if not viz_options.available_charts.area_plot %}disabled{% endif %}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 18V6l6 6 4-4 8 8v2H3z"/>
+                    </svg>
+                    <span>Area Plot</span>
+                </button>
+                <button type="button" class="chart-type-btn" data-type="histogram" {% if not viz_options.available_charts.histogram %}disabled{% endif %}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="12" width="4" height="9"/>
+                        <rect x="10" y="6" width="4" height="15"/>
+                        <rect x="17" y="9" width="4" height="12"/>
+                    </svg>
+                    <span>Histogram</span>
+                </button>
+                <button type="button" class="chart-type-btn" data-type="line" {% if not viz_options.available_charts.line_chart %}disabled{% endif %}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 18l6-6 4 4 8-8"/>
+                    </svg>
+                    <span>Line Chart</span>
+                </button>
+                <button type="button" class="chart-type-btn" data-type="box" {% if not viz_options.available_charts.box_plot %}disabled{% endif %}>
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="6" y="8" width="12" height="8"/>
+                        <line x1="12" y1="3" x2="12" y2="8"/>
+                        <line x1="12" y1="16" x2="12" y2="21"/>
+                        <line x1="9" y1="3" x2="15" y2="3"/>
+                        <line x1="9" y1="21" x2="15" y2="21"/>
+                    </svg>
+                    <span>Box Plot</span>
+                </button>
+            </div>
+        </div>
+        
+        <form id="chart-form" class="chart-options-form" style="display: none;">
+            <input type="hidden" name="chart_type" id="chart_type">
+            
+            <div id="pie-options" class="chart-specific-options" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Column</label>
+                    <select name="column" class="form-select">
+                        {% for col in viz_options.all_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div id="bar-options" class="chart-specific-options" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Category Column</label>
+                    <select name="column" class="form-select">
+                        {% for col in viz_options.all_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Value Column (optional)</label>
+                    <select name="value_column" class="form-select">
+                        <option value="">Count occurrences</option>
+                        {% for col in viz_options.numeric_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Orientation</label>
+                    <select name="orientation" class="form-select">
+                        <option value="vertical">Vertical</option>
+                        <option value="horizontal">Horizontal</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div id="scatter-options" class="chart-specific-options" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">X Column</label>
+                    <select name="x_column" class="form-select">
+                        {% for col in viz_options.numeric_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Y Column</label>
+                    <select name="y_column" class="form-select">
+                        {% for col in viz_options.numeric_columns %}
+                        <option value="{{ col }}" {% if loop.index == 2 %}selected{% endif %}>{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Color By (optional)</label>
+                    <select name="color_column" class="form-select">
+                        <option value="">None</option>
+                        {% for col in viz_options.categorical_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div id="area-options" class="chart-specific-options" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Time/Index Column</label>
+                    <select name="time_column" class="form-select">
+                        {% for col in viz_options.all_columns %}
+                        <option value="{{ col }}" {% if col in viz_options.datetime_columns %}selected{% endif %}>{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Value Columns</label>
+                    <select name="value_columns" class="form-select" multiple size="4">
+                        {% for col in viz_options.numeric_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="help-text">Hold Ctrl/Cmd to select multiple</span>
+                </div>
+                <div class="form-group checkbox-group">
+                    <label class="checkbox-option">
+                        <input type="checkbox" name="stacked" checked>
+                        <span>Stacked</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div id="histogram-options" class="chart-specific-options" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Column</label>
+                    <select name="column" class="form-select">
+                        {% for col in viz_options.numeric_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Number of Bins</label>
+                    <input type="number" name="bins" value="30" min="5" max="100" class="form-input">
+                </div>
+            </div>
+            
+            <div id="line-options" class="chart-specific-options" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">X-Axis Column</label>
+                    <select name="time_column" class="form-select">
+                        {% for col in viz_options.all_columns %}
+                        <option value="{{ col }}" {% if col in viz_options.datetime_columns %}selected{% endif %}>{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Value Columns</label>
+                    <select name="value_columns" class="form-select" multiple size="4">
+                        {% for col in viz_options.numeric_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="help-text">Hold Ctrl/Cmd to select multiple</span>
+                </div>
+            </div>
+            
+            <div id="box-options" class="chart-specific-options" style="display: none;">
+                <div class="form-group">
+                    <label class="form-label">Columns to Compare</label>
+                    <select name="columns" class="form-select" multiple size="4">
+                        {% for col in viz_options.numeric_columns %}
+                        <option value="{{ col }}">{{ col }}</option>
+                        {% endfor %}
+                    </select>
+                    <span class="help-text">Hold Ctrl/Cmd to select multiple</span>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-large" id="generate-btn">
+                    Generate Chart
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="card chart-display-card">
+        <h3 class="card-title">Chart Preview</h3>
+        <div id="chart-container" class="chart-container">
+            <div class="chart-placeholder">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <path d="M7 16V8M12 16v-5M17 16v-8"/>
+                </svg>
+                <p>Select a chart type and configure options to generate a visualization</p>
+            </div>
+        </div>
+        <div id="loading" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Generating chart...</p>
+        </div>
+    </div>
+</div>
+
+<div class="form-actions" style="margin-top: 30px;">
+    <a href="{{ url_for('clean') }}" class="btn btn-secondary">Data Cleaning</a>
+    <a href="{{ url_for('inspect') }}" class="btn btn-secondary">Back to Inspect</a>
+</div>
+
+<style>
+.viz-container {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 20px;
+}
+@media (max-width: 900px) {
+    .viz-container {
+        grid-template-columns: 1fr;
+    }
+}
+.chart-types {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 10px;
+}
+.chart-type-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 10px;
+    background: var(--bg-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.chart-type-btn:hover:not(:disabled) {
+    border-color: var(--primary-color);
+    background: white;
+}
+.chart-type-btn.active {
+    border-color: var(--primary-color);
+    background: rgba(45, 87, 239, 0.1);
+}
+.chart-type-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.chart-type-btn svg {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+.chart-type-btn span {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+.chart-options-form {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+.chart-container {
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chart-placeholder {
+    text-align: center;
+    color: var(--text-secondary);
+}
+.chart-placeholder svg {
+    color: var(--border-color);
+    margin-bottom: 15px;
+}
+.chart-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+.loading {
+    text-align: center;
+}
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid var(--border-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+document.querySelectorAll('.chart-type-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        if (this.disabled) return;
+        
+        document.querySelectorAll('.chart-type-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        const chartType = this.dataset.type;
+        document.getElementById('chart_type').value = chartType;
+        document.getElementById('chart-form').style.display = 'block';
+        
+        document.querySelectorAll('.chart-specific-options').forEach(opt => {
+            opt.style.display = 'none';
+        });
+        document.getElementById(chartType + '-options').style.display = 'block';
+    });
+});
+
+document.getElementById('chart-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const chartContainer = document.getElementById('chart-container');
+    const loading = document.getElementById('loading');
+    
+    chartContainer.style.display = 'none';
+    loading.style.display = 'block';
+    
+    fetch('{{ url_for("generate_chart") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        loading.style.display = 'none';
+        chartContainer.style.display = 'flex';
+        
+        if (data.error) {
+            chartContainer.innerHTML = '<div class="chart-placeholder"><p style="color: var(--danger-color);">Error: ' + data.error + '</p></div>';
+        } else {
+            chartContainer.innerHTML = '<img src="data:image/png;base64,' + data.chart + '" class="chart-image" alt="Generated Chart">';
+        }
+    })
+    .catch(error => {
+        loading.style.display = 'none';
+        chartContainer.style.display = 'flex';
+        chartContainer.innerHTML = '<div class="chart-placeholder"><p style="color: var(--danger-color);">Error generating chart</p></div>';
+    });
+});
+</script>
+{% endblock %}

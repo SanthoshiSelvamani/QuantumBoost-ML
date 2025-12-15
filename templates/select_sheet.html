@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumBoost ML - Select Sheet{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Select Excel Sheet</h2>
+    <p class="subtitle">Your file contains multiple sheets. Please select one to continue.</p>
+</div>
+
+<div class="card centered-card">
+    <h3 class="card-title">{{ filename }}</h3>
+    
+    <form action="{{ url_for('select_sheet') }}" method="POST">
+        <div class="form-group">
+            <label class="form-label">Available Sheets</label>
+            <div class="radio-group vertical">
+                {% for sheet in sheets %}
+                <label class="radio-option">
+                    <input type="radio" name="sheet_name" value="{{ sheet }}" {% if loop.first %}checked{% endif %}>
+                    <span class="radio-label">{{ sheet }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">Back</a>
+            <button type="submit" class="btn btn-primary">Load Sheet</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

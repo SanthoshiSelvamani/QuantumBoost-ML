@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QuantumBoost ML{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header class="header">
+        <div class="container header-content">
+            <a href="{{ url_for('landing') }}" style="text-decoration: none;"><h1 class="logo">QuantumBoost ML</h1></a>
+            <nav class="nav">
+                <a href="{{ url_for('index') }}" class="nav-step {% if request.endpoint == 'index' %}active{% endif %}">1. Upload</a>
+                <span class="nav-arrow">&rarr;</span>
+                <a href="{{ url_for('inspect') }}" class="nav-step {% if request.endpoint == 'inspect' %}active{% endif %}">2. Inspect</a>
+                <span class="nav-arrow">&rarr;</span>
+                <a href="{{ url_for('clean') }}" class="nav-step {% if request.endpoint in ['clean', 'clean_data'] %}active{% endif %}">3. Clean</a>
+                <span class="nav-arrow">&rarr;</span>
+                <a href="{{ url_for('visualize') }}" class="nav-step {% if request.endpoint == 'visualize' %}active{% endif %}">4. Visualize</a>
+                <span class="nav-arrow">&rarr;</span>
+                <a href="{{ url_for('train') }}" class="nav-step {% if request.endpoint == 'train' or 'results' in request.endpoint|default('') %}active{% endif %}">5. Train</a>
+            </nav>
+        </div>
+    </header>
+    
+    <main class="main">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>QuantumBoost ML - Quantum-Inspired Time Series Forecasting</p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumBoost ML - Data Cleaning{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Data Cleaning</h2>
+    <p class="subtitle">{{ data_source }}</p>
+</div>
+
+<div class="metrics-grid">
+    <div class="metric-card">
+        <span class="metric-value">{{ preview.total_rows }}</span>
+        <span class="metric-label">Total Rows</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value">{{ preview.total_columns }}</span>
+        <span class="metric-label">Total Columns</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value {% if preview.total_missing > 0 %}text-warning{% endif %}">{{ preview.total_missing }}</span>
+        <span class="metric-label">Missing Values</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value {% if preview.duplicate_rows > 0 %}text-warning{% endif %}">{{ preview.duplicate_rows }}</span>
+        <span class="metric-label">Duplicate Rows</span>
+    </div>
+    <div class="metric-card">
+        <span class="metric-value {% if preview.total_outliers > 0 %}text-warning{% endif %}">{{ preview.total_outliers }}</span>
+        <span class="metric-label">Outliers (IQR)</span>
+    </div>
+</div>
+
+<div class="inspection-grid">
+    <div class="card">
+        <h3 class="card-title">Data Preview</h3>
+        <div class="table-wrapper">
+            {{ head | safe }}
+        </div>
+    </div>
+    
+    <div class="card">
+        <h3 class="card-title">Data Quality Issues</h3>
+        <div class="quality-summary">
+            {% if preview.empty_columns %}
+            <div class="issue-item">
+                <span class="issue-icon">!</span>
+                <span>Empty columns: {{ preview.empty_columns | join(', ') }}</span>
+            </div>
+            {% endif %}
+            {% if preview.constant_columns %}
+            <div class="issue-item">
+                <span class="issue-icon">!</span>
+                <span>Constant columns: {{ preview.constant_columns | join(', ') }}</span>
+            </div>
+            {% endif %}
+            {% for col, count in preview.missing_values.items() %}
+            {% if count > 0 %}
+            <div class="issue-item">
+                <span class="issue-icon warning">~</span>
+                <span>{{ col }}: {{ count }} missing values</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% for col, count in preview.outliers.items() %}
+            {% if count > 0 %}
+            <div class="issue-item">
+                <span class="issue-icon info">o</span>
+                <span>{{ col }}: {{ count }} outliers</span>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div class="card cleaning-card">
+    <h3 class="card-title">Cleaning Options</h3>
+    
+    <form action="{{ url_for('clean_data') }}" method="POST" class="cleaning-form">
+        <div class="form-grid">
+            <div class="form-group checkbox-group">
+                <label class="checkbox-option">
+                    <input type="checkbox" name="remove_duplicates" {% if preview.duplicate_rows > 0 %}checked{% endif %}>
+                    <span>Remove Duplicate Rows ({{ preview.duplicate_rows }} found)</span>
+                </label>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-option">
+                    <input type="checkbox" name="trim_whitespace">
+                    <span>Trim Whitespace from Text</span>
+                </label>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-option">
+                    <input type="checkbox" name="remove_empty_columns" {% if preview.empty_columns %}checked{% endif %}>
+                    <span>Remove Empty Columns</span>
+                </label>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-option">
+                    <input type="checkbox" name="remove_constant_columns">
+                    <span>Remove Constant Columns</span>
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="handle_missing">Handle Missing Values</label>
+                <select name="handle_missing" id="handle_missing" class="form-select">
+                    <option value="none">Do Nothing</option>
+                    <option value="drop">Drop Rows with Missing Values</option>
+                    <option value="mean">Fill with Mean</option>
+                    <option value="median">Fill with Median</option>
+                    <option value="mode">Fill with Mode</option>
+                    <option value="interpolate" selected>Interpolate (Linear)</option>
+                    <option value="ffill">Forward Fill</option>
+                    <option value="bfill">Backward Fill</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label" for="standardize_case">Standardize Text Case</label>
+                <select name="standardize_case" id="standardize_case" class="form-select">
+                    <option value="">No Change</option>
+                    <option value="lower">lowercase</option>
+                    <option value="upper">UPPERCASE</option>
+                    <option value="title">Title Case</option>
+                </select>
+            </div>
+            
+            <div class="form-group checkbox-group">
+                <label class="checkbox-option">
+                    <input type="checkbox" name="remove_outliers" id="remove_outliers">
+                    <span>Remove Outliers</span>
+                </label>
+            </div>
+            
+            <div class="form-group outlier-options" id="outlier_options" style="display: none;">
+                <label class="form-label" for="outlier_method">Outlier Detection Method</label>
+                <select name="outlier_method" id="outlier_method" class="form-select">
+                    <option value="iqr">IQR (Interquartile Range)</option>
+                    <option value="zscore">Z-Score</option>
+                </select>
+                <label class="form-label" for="outlier_threshold" style="margin-top: 10px;">Threshold</label>
+                <input type="number" name="outlier_threshold" id="outlier_threshold" value="1.5" step="0.1" min="0.1" class="form-input">
+                <span class="help-text">IQR: typically 1.5-3.0, Z-score: typically 2.0-3.0</span>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <a href="{{ url_for('inspect') }}" class="btn btn-secondary">Back to Inspect</a>
+            <button type="submit" class="btn btn-primary btn-large">
+                Clean Data
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.getElementById('remove_outliers').addEventListener('change', function() {
+    document.getElementById('outlier_options').style.display = this.checked ? 'block' : 'none';
+});
+</script>
+
+<style>
+.quality-summary {
+    max-height: 300px;
+    overflow-y: auto;
+}
+.issue-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.issue-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--danger-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    font-weight: bold;
+    font-size: 12px;
+}
+.issue-icon.warning {
+    background: var(--warning-color);
+}
+.issue-icon.info {
+    background: var(--primary-color);
+}
+.outlier-options {
+    background: var(--bg-secondary);
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+</style>
+{% endblock %}

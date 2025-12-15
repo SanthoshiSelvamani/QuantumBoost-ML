@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}QuantumBoost ML - Training Results{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Training Results</h2>
+    <p class="subtitle">{{ data_source }} | Model: {{ model_type|upper }}</p>
+</div>
+
+{% if model_type == 'random_forest_classifier' %}
+<div class="metrics-grid hero-metrics">
+    <div class="metric-card large primary">
+        <span class="metric-value mono">{{ "%.4f"|format(quantum_metrics.Accuracy) }}</span>
+        <span class="metric-label">Test Accuracy</span>
+        <span class="metric-sublabel">Classification Accuracy</span>
+    </div>
+    <div class="metric-card large">
+        <span class="metric-value mono">{{ "%.4f"|format(quantum_metrics['Train Accuracy']) }}</span>
+        <span class="metric-label">Train Accuracy</span>
+        <span class="metric-sublabel">Training Set Accuracy</span>
+    </div>
+</div>
+
+{% if confusion_matrix %}
+<div class="card">
+    <h3 class="card-title">Confusion Matrix</h3>
+    <div class="table-wrapper">
+        <table class="data-table confusion-matrix-table">
+            <thead>
+                <tr>
+                    <th>Actual \ Predicted</th>
+                    {% for i in range(confusion_matrix|length) %}
+                    <th>Class {{ i }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in confusion_matrix %}
+                <tr>
+                    <td><strong>Class {{ loop.index0 }}</strong></td>
+                    {% set row_idx = loop.index0 %}
+                    {% for val in row %}
+                    <td class="mono {% if loop.index0 == row_idx %}correct-cell{% endif %}">{{ val }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <p class="card-note">Diagonal cells (highlighted) show correct predictions. Off-diagonal cells show misclassifications.</p>
+</div>
+{% endif %}
+
+{% else %}
+<div class="metrics-grid hero-metrics">
+    <div class="metric-card large primary">
+        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics.MAE) }}</span>
+        <span class="metric-label">MAE</span>
+        <span class="metric-sublabel">Mean Absolute Error</span>
+    </div>
+    <div class="metric-card large">
+        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics.RMSE) }}</span>
+        <span class="metric-label">RMSE</span>
+        <span class="metric-sublabel">Root Mean Square Error</span>
+    </div>
+    <div class="metric-card large">
+        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics.MAPE) }}%</span>
+        <span class="metric-label">MAPE</span>
+        <span class="metric-sublabel">Mean Absolute % Error</span>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <h3 class="card-title">Optimizer Comparison</h3>
+    <div class="table-wrapper">
+        {{ comparison_table | safe }}
+    </div>
+    <p class="card-note">QuantumBoost uses quantum tunneling and probabilistic jumps to escape local minima.</p>
+</div>
+
+<div class="card">
+    <h3 class="card-title">Preprocessing Steps Applied</h3>
+    <ul class="steps-list">
+        {% for step in preprocessing_steps %}
+        <li class="step-item">
+            <span class="step-icon">&#10003;</span>
+            {{ step }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="visualization-grid">
+    {% if plots.loss_curve %}
+    <div class="card">
+        <h3 class="card-title">Training Loss Curves</h3>
+        <div class="plot-container">
+            <img src="data:image/png;base64,{{ plots.loss_curve }}" alt="Loss Curves" class="plot-image">
+        </div>
+        <p class="plot-caption">Comparison of training and validation loss across optimizers</p>
+    </div>
+    {% endif %}
+    
+    {% if plots.optimizer_trajectory %}
+    <div class="card">
+        <h3 class="card-title">QuantumBoost Optimizer Trajectory</h3>
+        <div class="plot-container">
+            <img src="data:image/png;base64,{{ plots.optimizer_trajectory }}" alt="Optimizer Trajectory" class="plot-image">
+        </div>
+        <p class="plot-caption">Learning rate history with tunneling (green) and jump (red) events</p>
+    </div>
+    {% endif %}
+</div>
+
+{% if plots.forecast %}
+<div class="card full-width">
+    <h3 class="card-title">Forecast: Actual vs Predicted</h3>
+    <div class="plot-container wide">
+        <img src="data:image/png;base64,{{ plots.forecast }}" alt="Forecast Plot" class="plot-image">
+    </div>
+    <p class="plot-caption">QuantumBoost predictions on the test set with 95% confidence interval</p>
+</div>
+{% endif %}
+
+<div class="action-bar">
+    <a href="{{ url_for('inspect') }}" class="btn btn-secondary">Back to Inspection</a>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary">New Analysis</a>
+    <a href="{{ url_for('download_pdf') }}" class="btn btn-primary btn-large">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download PDF Report
+    </a>
+</div>
+{% endblock %}
