@@ -212,32 +212,24 @@ def prepare_sklearn_data(df, value_col, lag_cols=None):
 def compute_metrics(y_true, y_pred):
     """
     Compute forecasting metrics.
-    
-    Parameters:
-    -----------
-    y_true : array-like
-        True values
-    y_pred : array-like
-        Predicted values
-        
-    Returns:
-    --------
-    dict with MAE, RMSE, MAPE
+    Returns a dictionary with MAE, RMSE, MAPE
     """
+
     y_true = np.array(y_true)
     y_pred = np.array(y_pred)
-    
+
     mae = np.mean(np.abs(y_true - y_pred))
     rmse = np.sqrt(np.mean((y_true - y_pred) ** 2))
-    
+
     mask = y_true != 0
     if mask.any():
         mape = np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100
     else:
         mape = np.nan
-    
-    return {
-        'MAE': round(mae, 4),
-        'RMSE': round(rmse, 4),
-        'MAPE': round(mape, 2) if not np.isnan(mape) else 'N/A'
-    }
+
+    metrics = {}
+    metrics["MAE"] = round(mae, 4)
+    metrics["RMSE"] = round(rmse, 4)
+    metrics["MAPE"] = round(mape, 2) if not np.isnan(mape) else "N/A"
+
+    return metrics

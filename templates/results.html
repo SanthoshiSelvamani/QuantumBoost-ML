@@ -55,17 +55,18 @@
 {% else %}
 <div class="metrics-grid hero-metrics">
     <div class="metric-card large primary">
-        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics.MAE) }}</span>
+        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics["MAE"]) }}
+</span>
         <span class="metric-label">MAE</span>
         <span class="metric-sublabel">Mean Absolute Error</span>
     </div>
     <div class="metric-card large">
-        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics.RMSE) }}</span>
+        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics["RMSE"]) }}</span>
         <span class="metric-label">RMSE</span>
         <span class="metric-sublabel">Root Mean Square Error</span>
     </div>
     <div class="metric-card large">
-        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics.MAPE) }}%</span>
+        <span class="metric-value mono">{{ "%.8f"|format(quantum_metrics["MAPE"]) }}%</span>
         <span class="metric-label">MAPE</span>
         <span class="metric-sublabel">Mean Absolute % Error</span>
     </div>

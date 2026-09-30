@@ -1,1 +1,161 @@
-[]
+[
+  {
+    "session_id": "00b0fef9-1586-4ab7-9ac9-0182e8e3f889",
+    "data_source": "Uploaded: insurance_dirty.csv",
+    "rows": 1338,
+    "columns": 7,
+    "column_names": [
+      "age",
+      "sex",
+      "bmi",
+      "children",
+      "smoker"
+    ],
+    "timestamp": "2026-03-17 12:27:40"
+  },
+  {
+    "session_id": "74f5aafc-3e3e-4d70-84a3-97da1bbf05ba",
+    "data_source": "Uploaded: insurance_dirty.csv",
+    "rows": 1338,
+    "columns": 7,
+    "column_names": [
+      "age",
+      "sex",
+      "bmi",
+      "children",
+      "smoker"
+    ],
+    "timestamp": "2026-03-17 11:42:16"
+  },
+  {
+    "session_id": "26bd80bb-954e-4b7c-bfe3-c4bb95401bfe",
+    "data_source": "Uploaded: titanic dataset.csv",
+    "rows": 106,
+    "columns": 12,
+    "column_names": [
+      "PassengerId",
+      "Survived",
+      "Pclass",
+      "Name",
+      "Sex"
+    ],
+    "timestamp": "2026-03-16 22:12:28"
+  },
+  {
+    "session_id": "26bd80bb-954e-4b7c-bfe3-c4bb95401bfe",
+    "data_source": "Uploaded: insurance_dirty.csv",
+    "rows": 1338,
+    "columns": 7,
+    "column_names": [
+      "age",
+      "sex",
+      "bmi",
+      "children",
+      "smoker"
+    ],
+    "timestamp": "2026-03-16 22:10:54"
+  },
+  {
+    "session_id": "26bd80bb-954e-4b7c-bfe3-c4bb95401bfe",
+    "data_source": "Uploaded: insurance_dirty.csv",
+    "rows": 1338,
+    "columns": 7,
+    "column_names": [
+      "age",
+      "sex",
+      "bmi",
+      "children",
+      "smoker"
+    ],
+    "timestamp": "2026-03-16 22:10:28"
+  },
+  {
+    "session_id": "26bd80bb-954e-4b7c-bfe3-c4bb95401bfe",
+    "data_source": "Uploaded: iris-1.csv",
+    "rows": 150,
+    "columns": 5,
+    "column_names": [
+      "Sepal_length",
+      "patal_length",
+      "sepla_width",
+      "sepal_length",
+      "Species"
+    ],
+    "timestamp": "2026-03-16 18:10:32"
+  },
+  {
+    "session_id": "46117a74-251d-4b65-abf5-01e2165eb83b",
+    "data_source": "Sample Dataset (3 years daily)",
+    "rows": 1097,
+    "columns": 2,
+    "column_names": [
+      "date",
+      "value"
+    ],
+    "timestamp": "2026-02-24 20:17:02"
+  },
+  {
+    "session_id": "46117a74-251d-4b65-abf5-01e2165eb83b",
+    "data_source": "Sample Dataset (3 years daily)",
+    "rows": 1097,
+    "columns": 2,
+    "column_names": [
+      "date",
+      "value"
+    ],
+    "timestamp": "2026-02-24 18:02:48"
+  },
+  {
+    "session_id": "09558c2a-e8a5-45bb-a573-0980369b9da3",
+    "data_source": "Sample Dataset (3 years daily)",
+    "rows": 1097,
+    "columns": 2,
+    "column_names": [
+      "date",
+      "value"
+    ],
+    "timestamp": "2026-02-19 18:49:06"
+  },
+  {
+    "session_id": "c783d45a-1307-4e25-a4f8-f4a44f38a2f5",
+    "data_source": "Uploaded: insurance_dirty.csv",
+    "rows": 1338,
+    "columns": 7,
+    "column_names": [
+      "age",
+      "sex",
+      "bmi",
+      "children",
+      "smoker"
+    ],
+    "timestamp": "2026-02-06 19:53:21"
+  },
+  {
+    "session_id": "404f842c-9ff1-468d-ae74-c8499e576408",
+    "data_source": "Uploaded: insurance_dirty.csv",
+    "rows": 1338,
+    "columns": 7,
+    "column_names": [
+      "age",
+      "sex",
+      "bmi",
+      "children",
+      "smoker"
+    ],
+    "timestamp": "2025-12-16 19:21:46"
+  },
+  {
+    "session_id": "5b8f5121-ccd8-4a5d-b07f-c2d995b44af0",
+    "data_source": "Uploaded: insurance_dirty.csv",
+    "rows": 1338,
+    "columns": 7,
+    "column_names": [
+      "age",
+      "sex",
+      "bmi",
+      "children",
+      "smoker"
+    ],
+    "timestamp": "2025-12-15 21:56:23"
+  }
+]

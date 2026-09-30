@@ -40,9 +40,9 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SESSION_SECRET")
-if not app.secret_key:
-    raise RuntimeError("SESSION_SECRET environment variable must be set")
+
+app.secret_key = "quantumboost_secret_key"
+
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'instance', 'uploads')
@@ -165,9 +165,12 @@ def landing():
 @app.route('/app')
 def index():
     """Index page with upload form and model selection."""
-    session.clear()
     history = load_dataset_history()
-    return render_template('index.html', tensorflow_available=TENSORFLOW_AVAILABLE, dataset_history=history)
+    return render_template(
+        'index.html',
+        tensorflow_available=TENSORFLOW_AVAILABLE,
+        dataset_history=history
+    )
 
 
 @app.route('/upload', methods=['POST'])
@@ -760,9 +763,18 @@ def generate_result_plots(results, model_type):
     
     return plots
 
+def safe_format(val, suffix=""):
+    try:
+        return f"{float(val):.8f}{suffix}"
+    except (ValueError, TypeError):
+        return f"{val}{suffix}"
+
 
 @app.route('/download_pdf')
 def download_pdf():
+
+    print("DOWNLOAD PDF ROUTE HIT")
+
     """Generate and download PDF report."""
     try:
         from reportlab.lib import colors
@@ -861,7 +873,7 @@ def download_pdf():
         
         plots = results.get('plots', {})
         for plot_name, plot_data in plots.items():
-            if plot_data:
+            if plot_data:   
                 story.append(Paragraph(f"{plot_name.replace('_', ' ').title()}", heading_style))
                 img_buffer = io.BytesIO(base64.b64decode(plot_data))
                 img = Image(img_buffer, width=6*inch, height=3*inch)
